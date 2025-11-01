@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão - Oficina Mecânica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar-active {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+        .kanban-card {
+            transition: all 0.3s ease;
+        }
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            display: none !important;
+        }
+        .loading {
+            border-top-color: #3b82f6;
+            animation: spinner 0.6s linear infinite;
+        }
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-gray-800 text-white shadow-lg z-50">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-2xl font-bold flex items-center">
+                <i class="fas fa-car-wrench mr-3"></i>
+                Oficina Manager
+            </h1>
+            <p class="text-gray-400 text-sm mt-1">Sistema de Gestão</p>
+        </div>
+        
+        <nav class="mt-6">
+            <a href="#" data-page="dashboard" class="flex items-center px-6 py-3 hover:bg-gray-700 transition sidebar-active">
+                <i class="fas fa-dashboard w-6"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" data-page="ordens-servico" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-clipboard-list w-6"></i>
+                <span>Ordens de Serviço</span>
+            </a>
+            <a href="#" data-page="kanban" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-columns w-6"></i>
+                <span>Kanban</span>
+            </a>
+            
+            <div class="px-6 py-2 text-xs text-gray-500 uppercase mt-4">Cadastros</div>
+            
+            <a href="#" data-page="clientes" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-users w-6"></i>
+                <span>Clientes</span>
+            </a>
+            <a href="#" data-page="veiculos" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-car w-6"></i>
+                <span>Veículos</span>
+            </a>
+            <a href="#" data-page="pecas" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-cogs w-6"></i>
+                <span>Peças</span>
+            </a>
+            <a href="#" data-page="servicos" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-tools w-6"></i>
+                <span>Serviços</span>
+            </a>
+            <a href="#" data-page="mecanicos" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-user-tie w-6"></i>
+                <span>Mecânicos</span>
+            </a>
+            <a href="#" data-page="fornecedores" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-truck w-6"></i>
+                <span>Fornecedores</span>
+            </a>
+        </nav>
+
+        <div class="absolute bottom-0 w-full p-4 border-t border-gray-700 text-xs text-gray-400">
+            <p>v1.0.0 - Fase 1 (MVP)</p>
+            <p id="server-status" class="mt-1">
+                <i class="fas fa-circle text-green-400"></i> Online
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64">
+        <!-- Header -->
+        <div class="bg-white shadow-sm border-b border-gray-200 px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <h2 id="page-title" class="text-2xl font-bold text-gray-800">Dashboard</h2>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="busca-rapida" 
+                        placeholder="Buscar por placa ou cliente..." 
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-80"
+                    >
+                    <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                </div>
+                
+                <button id="btn-nova-os" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nova OS
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="content" class="p-8">
+            <!-- O conteúdo será carregado dinamicamente aqui -->
+            <div class="flex items-center justify-center h-64">
+                <div class="text-center">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Carregando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

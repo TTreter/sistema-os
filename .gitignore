@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Banco de dados (pode descomentar se quiser versionar o DB)
+# *.db
+# *.db-journal
+
+# Uploads e arquivos temporários
+uploads/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Ambiente
+.env
+.env.local
+
+# PM2
+.pm2/
+pids/
+logs/
+
+# Backup files
+*.backup
+*.bak
+*.tar.gz
+*.zip
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
