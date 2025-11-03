@@ -1,15 +1,17 @@
 {
   "name": "oficina-mecanica-sistema",
-  "version": "2.0.0",
-  "description": "Sistema completo de gestão para oficina mecânica - Fase 2: Orçamentos e Estoque",
+  "version": "3.0.0",
+  "description": "Sistema completo de gestão para oficina mecânica - Fase 3: Inteligência de Negócios",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
     "init-db": "node scripts/init-database.js",
     "migrate-fase2": "node scripts/migrate-fase2.js",
+    "migrate-fase3": "node scripts/migrate-fase3.js",
     "seed-db": "node scripts/seed-database.js",
     "seed-orcamentos": "node scripts/seed-orcamentos.js",
+    "seed-financeiro": "node scripts/seed-financeiro.js",
     "test": "curl http://localhost:3000"
   },
   "keywords": [

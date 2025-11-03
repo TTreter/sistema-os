@@ -19,6 +19,8 @@ const osRoutes = require('./routes/ordens-servico');
 const fornecedoresRoutes = require('./routes/fornecedores');
 const orcamentosRoutes = require('./routes/orcamentos');
 const estoqueRoutes = require('./routes/estoque');
+const financeiroRoutes = require('./routes/financeiro');
+const relatoriosRoutes = require('./routes/relatorios');
 
 // Configurações
 const PORT = process.env.PORT || 3000;
@@ -56,8 +58,8 @@ app.use((req, res, next) => {
 app.get('/api', (req, res) => {
   res.json({
     message: 'API do Sistema de Gestão para Oficina Mecânica',
-    version: '2.0.0',
-    fase: 'Fase 2 - Orçamentos e Estoque Avançado',
+    version: '3.0.0',
+    fase: 'Fase 3 - Inteligência de Negócios e Financeiro',
     endpoints: {
       clientes: '/api/clientes',
       veiculos: '/api/veiculos',
@@ -67,7 +69,9 @@ app.get('/api', (req, res) => {
       ordens_servico: '/api/ordens-servico',
       fornecedores: '/api/fornecedores',
       orcamentos: '/api/orcamentos',
-      estoque: '/api/estoque'
+      estoque: '/api/estoque',
+      financeiro: '/api/financeiro',
+      relatorios: '/api/relatorios'
     }
   });
 });
@@ -82,6 +86,8 @@ app.use('/api/ordens-servico', osRoutes);
 app.use('/api/fornecedores', fornecedoresRoutes);
 app.use('/api/orcamentos', orcamentosRoutes);
 app.use('/api/estoque', estoqueRoutes);
+app.use('/api/financeiro', financeiroRoutes);
+app.use('/api/relatorios', relatoriosRoutes);
 
 // Rota para busca rápida (placa ou nome de cliente)
 app.get('/api/busca-rapida', (req, res) => {
