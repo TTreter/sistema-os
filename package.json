@@ -1,7 +1,7 @@
 {
-  "name": "oficina-mecanica-sistema",
+  "name": "tgest",
   "version": "3.0.0",
-  "description": "Sistema completo de gestão para oficina mecânica - Fase 3: Inteligência de Negócios",
+  "description": "tGest - Sistema de Gestão de Oficinas - Fase 3: Inteligência de Negócios",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -15,10 +15,12 @@
     "test": "curl http://localhost:3000"
   },
   "keywords": [
+    "tgest",
     "oficina",
     "mecanica",
     "gestao",
     "ordem-servico",
+    "crm",
     "local"
   ],
   "author": "",

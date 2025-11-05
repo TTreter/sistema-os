@@ -1,12 +1,12 @@
-# 🚗 Sistema de Gestão para Oficina Mecânica
+# 🚗 tGest - Sistema de Gestão de Oficinas
 
 Sistema completo de gestão operacional para oficinas mecânicas, desenvolvido com Node.js, Express e SQLite. Execução 100% local, sem necessidade de internet ou servidores externos.
 
 ## 📋 Sobre o Projeto
 
-**Nome**: Sistema de Gestão para Oficina Mecânica  
-**Versão**: 1.0.0 (Fase 1 - MVP)  
-**Objetivo**: Digitalizar e otimizar a operação de oficinas mecânicas, desde o cadastro de clientes até o controle completo de ordens de serviço.
+**Nome**: tGest - Sistema de Gestão de Oficinas  
+**Versão**: 3.0.0 (Fase 3 - Inteligência de Negócios)  
+**Objetivo**: Digitalizar e otimizar a operação de oficinas mecânicas com CRM, automações e business intelligence completo.
 
 ## ✨ Funcionalidades Implementadas (Fase 1)
 

@@ -1,5 +1,5 @@
 /**
- * Servidor Principal - Sistema de Gestão para Oficina Mecânica
+ * Servidor Principal - tGest - Sistema de Gestão de Oficinas
  * Aplicação Local com Node.js + Express + SQLite
  */
 
@@ -57,7 +57,7 @@ app.use((req, res, next) => {
 
 app.get('/api', (req, res) => {
   res.json({
-    message: 'API do Sistema de Gestão para Oficina Mecânica',
+    message: 'tGest - Sistema de Gestão de Oficinas - API',
     version: '3.0.0',
     fase: 'Fase 3 - Inteligência de Negócios e Financeiro',
     endpoints: {
@@ -172,7 +172,7 @@ app.listen(PORT, HOST, () => {
   const localIP = getLocalIP();
   
   console.log('\n╔════════════════════════════════════════════════════════════╗');
-  console.log('║   🚗 Sistema de Gestão para Oficina Mecânica - v1.0.0   ║');
+  console.log('║      🚗 tGest - Sistema de Gestão de Oficinas v3.0.0    ║');
   console.log('╚════════════════════════════════════════════════════════════╝\n');
   console.log('✅ Servidor rodando com sucesso!\n');
   console.log('📍 Acesso Local (este computador):');

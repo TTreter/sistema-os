@@ -1,4 +1,4 @@
-# 🚀 FASE 2 - Orçamentos e Estoque Avançado
+# 🚀 tGest - FASE 2 - Orçamentos e Estoque Avançado
 
 ## ✅ IMPLEMENTAÇÃO COMPLETA DO BACKEND
 

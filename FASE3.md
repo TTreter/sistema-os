@@ -1,4 +1,4 @@
-# 🚀 FASE 3 - Inteligência de Negócios e Financeiro
+# 🚀 tGest - FASE 3 - Inteligência de Negócios e Financeiro
 
 ## ✅ IMPLEMENTAÇÃO COMPLETA
 
