@@ -1,7 +1,7 @@
 {
   "name": "tgest",
-  "version": "3.0.0",
-  "description": "tGest - Sistema de Gestão de Oficinas - Fase 3: Inteligência de Negócios",
+  "version": "4.0.0",
+  "description": "tGest - Sistema de Gestão de Oficinas - Fase 4: CRM e Automações",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,9 +9,11 @@
     "init-db": "node scripts/init-database.js",
     "migrate-fase2": "node scripts/migrate-fase2.js",
     "migrate-fase3": "node scripts/migrate-fase3.js",
+    "migrate-fase4": "node scripts/migrate-fase4.js",
     "seed-db": "node scripts/seed-database.js",
     "seed-orcamentos": "node scripts/seed-orcamentos.js",
     "seed-financeiro": "node scripts/seed-financeiro.js",
+    "seed-crm": "node scripts/seed-crm.js",
     "test": "curl http://localhost:3000"
   },
   "keywords": [

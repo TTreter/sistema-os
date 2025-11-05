@@ -21,6 +21,11 @@ const orcamentosRoutes = require('./routes/orcamentos');
 const estoqueRoutes = require('./routes/estoque');
 const financeiroRoutes = require('./routes/financeiro');
 const relatoriosRoutes = require('./routes/relatorios');
+// Fase 4 - CRM e Automações
+const crmRoutes = require('./routes/crm');
+const lembretesRoutes = require('./routes/lembretes');
+const pesquisasRoutes = require('./routes/pesquisas');
+const notificacoesRoutes = require('./routes/notificacoes');
 
 // Configurações
 const PORT = process.env.PORT || 3000;
@@ -58,8 +63,8 @@ app.use((req, res, next) => {
 app.get('/api', (req, res) => {
   res.json({
     message: 'tGest - Sistema de Gestão de Oficinas - API',
-    version: '3.0.0',
-    fase: 'Fase 3 - Inteligência de Negócios e Financeiro',
+    version: '4.0.0',
+    fase: 'Fase 4 - CRM e Automações',
     endpoints: {
       clientes: '/api/clientes',
       veiculos: '/api/veiculos',
@@ -71,7 +76,11 @@ app.get('/api', (req, res) => {
       orcamentos: '/api/orcamentos',
       estoque: '/api/estoque',
       financeiro: '/api/financeiro',
-      relatorios: '/api/relatorios'
+      relatorios: '/api/relatorios',
+      crm: '/api/crm',
+      lembretes: '/api/lembretes',
+      pesquisas: '/api/pesquisas',
+      notificacoes: '/api/notificacoes'
     }
   });
 });
@@ -88,6 +97,11 @@ app.use('/api/orcamentos', orcamentosRoutes);
 app.use('/api/estoque', estoqueRoutes);
 app.use('/api/financeiro', financeiroRoutes);
 app.use('/api/relatorios', relatoriosRoutes);
+// Fase 4 - CRM e Automações
+app.use('/api/crm', crmRoutes);
+app.use('/api/lembretes', lembretesRoutes);
+app.use('/api/pesquisas', pesquisasRoutes);
+app.use('/api/notificacoes', notificacoesRoutes);
 
 // Rota para busca rápida (placa ou nome de cliente)
 app.get('/api/busca-rapida', (req, res) => {
