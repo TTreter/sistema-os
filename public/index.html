@@ -41,11 +41,15 @@
             <p class="text-gray-400 text-sm mt-1">Gestão de Oficinas</p>
         </div>
         
-        <nav class="mt-6">
+        <nav class="mt-6 overflow-y-auto h-[calc(100vh-180px)]">
+            <!-- Dashboard -->
             <a href="#" data-page="dashboard" class="flex items-center px-6 py-3 hover:bg-gray-700 transition sidebar-active">
                 <i class="fas fa-dashboard w-6"></i>
                 <span>Dashboard</span>
             </a>
+            
+            <!-- Operacional -->
+            <div class="px-6 py-2 text-xs text-gray-500 uppercase mt-4">Operacional</div>
             <a href="#" data-page="ordens-servico" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
                 <i class="fas fa-clipboard-list w-6"></i>
                 <span>Ordens de Serviço</span>
@@ -54,9 +58,13 @@
                 <i class="fas fa-columns w-6"></i>
                 <span>Kanban</span>
             </a>
+            <a href="#" data-page="orcamentos" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-file-invoice-dollar w-6"></i>
+                <span>Orçamentos</span>
+            </a>
             
+            <!-- Cadastros -->
             <div class="px-6 py-2 text-xs text-gray-500 uppercase mt-4">Cadastros</div>
-            
             <a href="#" data-page="clientes" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
                 <i class="fas fa-users w-6"></i>
                 <span>Clientes</span>
@@ -81,10 +89,44 @@
                 <i class="fas fa-truck w-6"></i>
                 <span>Fornecedores</span>
             </a>
+            
+            <!-- Estoque e Financeiro -->
+            <div class="px-6 py-2 text-xs text-gray-500 uppercase mt-4">Gestão</div>
+            <a href="#" data-page="estoque" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-boxes w-6"></i>
+                <span>Estoque</span>
+            </a>
+            <a href="#" data-page="financeiro" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-dollar-sign w-6"></i>
+                <span>Financeiro</span>
+            </a>
+            <a href="#" data-page="relatorios" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-chart-line w-6"></i>
+                <span>Relatórios</span>
+            </a>
+            
+            <!-- CRM e Automações -->
+            <div class="px-6 py-2 text-xs text-gray-500 uppercase mt-4">CRM</div>
+            <a href="#" data-page="crm" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-user-circle w-6"></i>
+                <span>CRM Dashboard</span>
+            </a>
+            <a href="#" data-page="lembretes" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-bell w-6"></i>
+                <span>Lembretes</span>
+            </a>
+            <a href="#" data-page="pesquisas" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-star w-6"></i>
+                <span>Satisfação</span>
+            </a>
+            <a href="#" data-page="notificacoes" class="flex items-center px-6 py-3 hover:bg-gray-700 transition">
+                <i class="fas fa-envelope w-6"></i>
+                <span>Notificações</span>
+            </a>
         </nav>
 
         <div class="absolute bottom-0 w-full p-4 border-t border-gray-700 text-xs text-gray-400">
-            <p>v3.0.0 - Fase 3</p>
+            <p>v4.0.0 - CRM & Automações</p>
             <p id="server-status" class="mt-1">
                 <i class="fas fa-circle text-green-400"></i> Online
             </p>

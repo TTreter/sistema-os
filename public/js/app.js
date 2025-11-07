@@ -143,6 +143,9 @@ const PageManager = {
         case 'kanban':
           await Pages.Kanban.render();
           break;
+        case 'orcamentos':
+          await Pages.Orcamentos.render();
+          break;
         case 'clientes':
           await Pages.Clientes.render();
           break;
@@ -160,6 +163,27 @@ const PageManager = {
           break;
         case 'fornecedores':
           await Pages.Fornecedores.render();
+          break;
+        case 'estoque':
+          await Pages.Estoque.render();
+          break;
+        case 'financeiro':
+          await Pages.Financeiro.render();
+          break;
+        case 'relatorios':
+          await Pages.Relatorios.render();
+          break;
+        case 'crm':
+          await Pages.CRM.render();
+          break;
+        case 'lembretes':
+          await Pages.Lembretes.render();
+          break;
+        case 'pesquisas':
+          await Pages.Pesquisas.render();
+          break;
+        case 'notificacoes':
+          await Pages.Notificacoes.render();
           break;
         default:
           document.getElementById('content').innerHTML = '<p class="text-center text-gray-500">Página não encontrada</p>';
@@ -480,6 +504,439 @@ const Pages = {
           <h3 class="text-lg font-semibold text-gray-800 mb-4">Módulo de Fornecedores - Em Desenvolvimento</h3>
         </div>
       `;
+    }
+  },
+
+  // ===== FASE 2 =====
+  Orcamentos: {
+    async render() {
+      const content = document.getElementById('content');
+      try {
+        const response = await api.get('/orcamentos');
+        const stats = await api.get('/orcamentos/estatisticas');
+        
+        content.innerHTML = `
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Orçamentos</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Total</p>
+                <p class="text-3xl font-bold text-gray-800">${stats.data.total || 0}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Pendentes</p>
+                <p class="text-3xl font-bold text-yellow-600">${stats.data.pendentes || 0}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Aprovados</p>
+                <p class="text-3xl font-bold text-green-600">${stats.data.aprovados || 0}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Taxa Conversão</p>
+                <p class="text-3xl font-bold text-blue-600">${stats.data.taxa_conversao || 0}%</p>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <h4 class="text-lg font-semibold mb-4">Lista de Orçamentos</h4>
+              <div class="text-sm text-gray-600">
+                <p>Total de ${response.data.total || 0} orçamento(s) cadastrado(s)</p>
+                <p class="mt-2 text-blue-600">Use a API /api/orcamentos para gerenciar orçamentos</p>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar orçamentos</div>`;
+      }
+    }
+  },
+
+  Estoque: {
+    async render() {
+      const content = document.getElementById('content');
+      try {
+        const response = await api.get('/estoque/estatisticas');
+        
+        content.innerHTML = `
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Controle de Estoque</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Valor Total em Estoque</p>
+                <p class="text-3xl font-bold text-gray-800">${Utils.formatCurrency(response.data.valor_total_estoque || 0)}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Peças com Estoque Baixo</p>
+                <p class="text-3xl font-bold text-red-600">${response.data.pecas_estoque_baixo || 0}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Total de Movimentações</p>
+                <p class="text-3xl font-bold text-blue-600">${response.data.total_movimentacoes || 0}</p>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <h4 class="text-lg font-semibold mb-4">Gestão de Estoque Avançada</h4>
+              <div class="text-sm text-gray-600">
+                <p>✅ Controle de movimentações (Entrada, Saída, Ajuste, Devolução)</p>
+                <p>✅ Rastreamento completo de histórico</p>
+                <p>✅ Alertas de estoque baixo automáticos</p>
+                <p class="mt-4 text-blue-600">Use a API /api/estoque para gerenciar o estoque</p>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar estatísticas de estoque</div>`;
+      }
+    }
+  },
+
+  // ===== FASE 3 =====
+  Financeiro: {
+    async render() {
+      const content = document.getElementById('content');
+      try {
+        const response = await api.get('/financeiro/resumo');
+        
+        content.innerHTML = `
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Financeiro</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Contas a Receber</p>
+                <p class="text-2xl font-bold text-green-600">${Utils.formatCurrency(response.data.total_receber || 0)}</p>
+                <p class="text-xs text-gray-500 mt-1">${response.data.contas_receber_abertas || 0} abertas</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Contas a Pagar</p>
+                <p class="text-2xl font-bold text-red-600">${Utils.formatCurrency(response.data.total_pagar || 0)}</p>
+                <p class="text-xs text-gray-500 mt-1">${response.data.contas_pagar_abertas || 0} abertas</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Saldo Projetado</p>
+                <p class="text-2xl font-bold text-blue-600">${Utils.formatCurrency(response.data.saldo_projetado || 0)}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Contas Vencidas</p>
+                <p class="text-2xl font-bold text-orange-600">${response.data.contas_vencidas || 0}</p>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <h4 class="text-lg font-semibold mb-4">Módulo Financeiro Completo</h4>
+              <div class="text-sm text-gray-600">
+                <p>✅ Contas a Receber e Pagar</p>
+                <p>✅ Fluxo de Caixa Automático</p>
+                <p>✅ Plano de Contas Configurável</p>
+                <p>✅ Alertas de Vencimento</p>
+                <p class="mt-4 text-blue-600">Use a API /api/financeiro para gerenciar finanças</p>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar resumo financeiro</div>`;
+      }
+    }
+  },
+
+  Relatorios: {
+    async render() {
+      const content = document.getElementById('content');
+      try {
+        const dashboard = await api.get('/relatorios/dashboard?periodo=30');
+        
+        content.innerHTML = `
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Relatórios e Business Intelligence</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">OS Finalizadas (30d)</p>
+                <p class="text-3xl font-bold text-gray-800">${dashboard.data.total_os_finalizadas || 0}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Faturamento (30d)</p>
+                <p class="text-2xl font-bold text-green-600">${Utils.formatCurrency(dashboard.data.faturamento_total || 0)}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Margem Média</p>
+                <p class="text-3xl font-bold text-blue-600">${dashboard.data.margem_media || 0}%</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Ticket Médio</p>
+                <p class="text-2xl font-bold text-purple-600">${Utils.formatCurrency(dashboard.data.ticket_medio || 0)}</p>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <h4 class="text-lg font-semibold mb-4">Relatórios Disponíveis</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div>
+                  <p>✅ Análise de Rentabilidade por OS</p>
+                  <p>✅ Curva ABC de Clientes</p>
+                  <p>✅ Curva ABC de Peças</p>
+                </div>
+                <div>
+                  <p>✅ Performance por Categoria</p>
+                  <p>✅ Performance por Mecânico</p>
+                  <p>✅ Dashboard Consolidado</p>
+                </div>
+              </div>
+              <p class="mt-4 text-blue-600">Use a API /api/relatorios para gerar relatórios</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar dashboard</div>`;
+      }
+    }
+  },
+
+  // ===== FASE 4 - CRM =====
+  CRM: {
+    async render() {
+      const content = document.getElementById('content');
+      try {
+        const dashboard = await api.get('/crm/dashboard');
+        
+        content.innerHTML = `
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">CRM Dashboard</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Lembretes Vencidos</p>
+                <p class="text-3xl font-bold text-red-600">${dashboard.data.lembretes.vencidos || 0}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Lembretes Próximos</p>
+                <p class="text-3xl font-bold text-yellow-600">${dashboard.data.lembretes.proximos || 0}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Satisfação Média</p>
+                <p class="text-3xl font-bold text-blue-600">${dashboard.data.pesquisas.media_geral || '-'}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Taxa de Resposta</p>
+                <p class="text-3xl font-bold text-green-600">${dashboard.data.pesquisas.taxa_resposta || 0}%</p>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <h4 class="text-lg font-semibold mb-4">Funcionalidades CRM</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div>
+                  <p>✅ Perfil 360° do Cliente</p>
+                  <p>✅ Histórico Completo de Interações</p>
+                  <p>✅ Análise de Retenção e Risco</p>
+                  <p>✅ Preferências de Comunicação</p>
+                </div>
+                <div>
+                  <p>✅ Lembretes Automáticos de Manutenção</p>
+                  <p>✅ Pesquisas de Satisfação com NPS</p>
+                  <p>✅ Notificações WhatsApp/SMS/Email</p>
+                  <p>✅ Campanhas de Marketing</p>
+                </div>
+              </div>
+              <p class="mt-4 text-blue-600">Use a API /api/crm para acessar funcionalidades CRM</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar CRM dashboard</div>`;
+      }
+    }
+  },
+
+  Lembretes: {
+    async render() {
+      const content = document.getElementById('content');
+      try {
+        const response = await api.get('/lembretes/vencidos');
+        
+        let lembretesHtml = '';
+        if (response.data.lembretes && response.data.lembretes.length > 0) {
+          lembretesHtml = response.data.lembretes.map(l => `
+            <div class="border-b border-gray-200 py-4 last:border-0">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-semibold text-gray-800">${l.cliente_nome}</p>
+                  <p class="text-sm text-gray-600">${l.veiculo_marca} ${l.veiculo_modelo} - ${l.veiculo_placa}</p>
+                  <p class="text-sm text-gray-700 mt-1">${l.descricao}</p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    Data: ${Utils.formatDate(l.data_proxima)} | 
+                    ${l.km_proximo ? 'KM: ' + l.km_proximo.toLocaleString() : ''}
+                  </p>
+                </div>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full ${
+                  l.urgencia === 'VENCIDO' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                }">${l.urgencia}</span>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          lembretesHtml = '<p class="text-gray-500 text-center py-8">Nenhum lembrete vencido ou próximo</p>';
+        }
+        
+        content.innerHTML = `
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Lembretes de Manutenção</h3>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h4 class="text-lg font-semibold mb-4">Lembretes Vencidos e Próximos (${response.data.total || 0})</h4>
+              ${lembretesHtml}
+            </div>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p class="text-sm text-blue-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                Lembretes são criados automaticamente ao finalizar OS. Use a API /api/lembretes para gerenciar.
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar lembretes</div>`;
+      }
+    }
+  },
+
+  Pesquisas: {
+    async render() {
+      const content = document.getElementById('content');
+      try {
+        const stats = await api.get('/pesquisas/estatisticas/geral');
+        const nps = await api.get('/pesquisas/estatisticas/nps');
+        
+        content.innerHTML = `
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Pesquisas de Satisfação</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Atendimento</p>
+                <p class="text-3xl font-bold text-blue-600">${stats.data.estatisticas.media_atendimento || '-'}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Qualidade</p>
+                <p class="text-3xl font-bold text-green-600">${stats.data.estatisticas.media_qualidade || '-'}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Prazo</p>
+                <p class="text-3xl font-bold text-yellow-600">${stats.data.estatisticas.media_prazo || '-'}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Preço</p>
+                <p class="text-3xl font-bold text-orange-600">${stats.data.estatisticas.media_preco || '-'}</p>
+              </div>
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <p class="text-gray-500 text-sm">Média Geral</p>
+                <p class="text-3xl font-bold text-purple-600">${stats.data.estatisticas.media_geral || '-'}</p>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <h4 class="text-lg font-semibold mb-4">NPS (Net Promoter Score)</h4>
+                <p class="text-5xl font-bold text-center ${
+                  parseFloat(nps.data.nps_score) >= 50 ? 'text-green-600' : 
+                  parseFloat(nps.data.nps_score) >= 0 ? 'text-yellow-600' : 'text-red-600'
+                }">${nps.data.nps_score || 0}</p>
+                <p class="text-center text-gray-600 mt-2">${nps.data.classificacao || '-'}</p>
+                <div class="mt-4 text-sm text-gray-600">
+                  <p>Promotores: ${nps.data.promotores || 0} (${nps.data.percentual_promotores || 0}%)</p>
+                  <p>Detratores: ${nps.data.detratores || 0} (${nps.data.percentual_detratores || 0}%)</p>
+                </div>
+              </div>
+              
+              <div class="bg-white rounded-lg shadow-md p-6">
+                <h4 class="text-lg font-semibold mb-4">Taxa de Resposta</h4>
+                <p class="text-5xl font-bold text-center text-blue-600">${stats.data.estatisticas.taxa_resposta || 0}%</p>
+                <div class="mt-4 text-sm text-gray-600">
+                  <p>Total de Pesquisas: ${stats.data.estatisticas.total_pesquisas || 0}</p>
+                  <p>Respondidas: ${stats.data.estatisticas.total_respondidas || 0}</p>
+                  <p>Recomendariam: ${stats.data.estatisticas.percentual_recomendaria || 0}%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-green-50 border-l-4 border-green-400 p-4">
+              <p class="text-sm text-green-800">
+                <i class="fas fa-check-circle mr-2"></i>
+                Pesquisas são criadas automaticamente ao finalizar OS. Clientes respondem via link único.
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar estatísticas de pesquisas</div>`;
+      }
+    }
+  },
+
+  Notificacoes: {
+    async render() {
+      const content = document.getElementById('content');
+      try {
+        const stats = await api.get('/notificacoes/estatisticas/geral');
+        const pendentes = await api.get('/notificacoes/pendentes');
+        
+        content.innerHTML = `
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Sistema de Notificações</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              ${stats.data.por_meio.map(m => `
+                <div class="bg-white rounded-lg shadow-md p-6">
+                  <p class="text-gray-500 text-sm">${m.meio}</p>
+                  <p class="text-3xl font-bold text-gray-800">${m.total || 0}</p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    Enviadas: ${m.enviadas || 0} | Erros: ${m.erros || 0}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h4 class="text-lg font-semibold mb-4">Notificações Pendentes (${pendentes.data.total || 0})</h4>
+              ${pendentes.data.total > 0 ? `
+                <div class="text-sm text-gray-600">
+                  <p>Existem ${pendentes.data.total} notificação(ões) pendente(s) de envio.</p>
+                </div>
+              ` : `
+                <p class="text-gray-500 text-center py-4">Nenhuma notificação pendente</p>
+              `}
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+              <h4 class="text-lg font-semibold mb-4">Canais de Comunicação</h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                <div>
+                  <p class="font-semibold mb-2"><i class="fab fa-whatsapp text-green-600"></i> WhatsApp</p>
+                  <p>Ideal para lembretes rápidos e atualizações de status</p>
+                </div>
+                <div>
+                  <p class="font-semibold mb-2"><i class="fas fa-sms text-blue-600"></i> SMS</p>
+                  <p>Confiável para avisos importantes e urgentes</p>
+                </div>
+                <div>
+                  <p class="font-semibold mb-2"><i class="fas fa-envelope text-purple-600"></i> Email</p>
+                  <p>Perfeito para orçamentos e documentos</p>
+                </div>
+              </div>
+              <p class="mt-4 text-blue-600">Use a API /api/notificacoes para enviar mensagens</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar estatísticas de notificações</div>`;
+      }
     }
   }
 };
