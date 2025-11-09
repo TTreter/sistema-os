@@ -440,70 +440,488 @@ const Pages = {
   Clientes: {
     async render() {
       const content = document.getElementById('content');
-      const response = await api.get('/clientes?ativo=true');
-      const clientes = response.data;
+      try {
+        const response = await api.get('/clientes?ativo=true');
+        const clientes = response.data;
 
-      content.innerHTML = `
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Módulo de Clientes - Em Desenvolvimento</h3>
-          <p class="text-gray-600">Total de clientes: ${clientes.length}</p>
-        </div>
-      `;
+        content.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-bold text-gray-800">Clientes</h3>
+              <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Novo Cliente
+              </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CPF/CNPJ</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefone</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data Cadastro</th>
+                      <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    ${clientes.map(c => `
+                      <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                          <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center">
+                              <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                              <div class="text-sm font-medium text-gray-900">${c.nome}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${c.cpf_cnpj || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${c.telefone || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${c.email || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${Utils.formatDate(c.data_cadastro)}</td>
+                        <td class="px-6 py-4 text-center">
+                          <button class="text-blue-600 hover:text-blue-800 mx-1" title="Ver Perfil CRM">
+                            <i class="fas fa-user-circle"></i>
+                          </button>
+                          <button class="text-green-600 hover:text-green-800 mx-1" title="Editar">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p class="text-sm text-blue-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                Total de ${clientes.length} cliente(s) cadastrado(s) | 
+                Use a API <code class="bg-white px-2 py-1 rounded">/api/clientes</code> para gerenciar
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar clientes</div>`;
+      }
     }
   },
 
   Veiculos: {
     async render() {
       const content = document.getElementById('content');
-      content.innerHTML = `
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Módulo de Veículos - Em Desenvolvimento</h3>
-        </div>
-      `;
+      try {
+        const response = await api.get('/veiculos');
+        const veiculos = response.data;
+
+        content.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-bold text-gray-800">Veículos</h3>
+              <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Novo Veículo
+              </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Placa</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Marca/Modelo</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ano</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">KM Atual</th>
+                      <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    ${veiculos.map(v => `
+                      <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                          <span class="font-semibold text-gray-800">${v.placa}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                          <div class="text-sm">
+                            <div class="font-medium text-gray-900">${v.marca}</div>
+                            <div class="text-gray-600">${v.modelo}</div>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${v.ano || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${v.cliente_nome || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${v.km_atual ? v.km_atual.toLocaleString() + ' km' : '-'}</td>
+                        <td class="px-6 py-4 text-center">
+                          <button class="text-blue-600 hover:text-blue-800 mx-1" title="Histórico">
+                            <i class="fas fa-history"></i>
+                          </button>
+                          <button class="text-green-600 hover:text-green-800 mx-1" title="Editar">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p class="text-sm text-blue-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                Total de ${veiculos.length} veículo(s) cadastrado(s) | 
+                Use a API <code class="bg-white px-2 py-1 rounded">/api/veiculos</code> para gerenciar
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar veículos</div>`;
+      }
     }
   },
 
   Pecas: {
     async render() {
       const content = document.getElementById('content');
-      content.innerHTML = `
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Módulo de Peças - Em Desenvolvimento</h3>
-        </div>
-      `;
+      try {
+        const response = await api.get('/pecas');
+        const pecas = response.data;
+
+        // Separar peças com estoque baixo
+        const pecasBaixas = pecas.filter(p => p.estoque_atual <= p.estoque_minimo);
+
+        content.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-bold text-gray-800">Peças e Produtos</h3>
+              <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Nova Peça
+              </button>
+            </div>
+
+            ${pecasBaixas.length > 0 ? `
+              <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                <div class="flex items-start">
+                  <i class="fas fa-exclamation-triangle text-red-600 mt-1 mr-3"></i>
+                  <div>
+                    <h4 class="font-semibold text-red-800">Alerta de Estoque Baixo</h4>
+                    <p class="text-red-700 text-sm">${pecasBaixas.length} peça(s) com estoque abaixo do mínimo</p>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoria</th>
+                      <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Estoque</th>
+                      <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Preço Custo</th>
+                      <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Preço Venda</th>
+                      <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    ${pecas.map(p => `
+                      <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">${p.codigo}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">${p.nome}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${p.categoria || '-'}</td>
+                        <td class="px-6 py-4 text-right">
+                          <span class="text-sm font-semibold ${p.estoque_atual <= p.estoque_minimo ? 'text-red-600' : 'text-gray-900'}">
+                            ${p.estoque_atual || 0}
+                          </span>
+                          <span class="text-xs text-gray-500"> / ${p.estoque_minimo || 0}</span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600 text-right">${Utils.formatCurrency(p.preco_custo)}</td>
+                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 text-right">${Utils.formatCurrency(p.preco_venda)}</td>
+                        <td class="px-6 py-4 text-center">
+                          <button class="text-blue-600 hover:text-blue-800 mx-1" title="Movimentações">
+                            <i class="fas fa-exchange-alt"></i>
+                          </button>
+                          <button class="text-green-600 hover:text-green-800 mx-1" title="Editar">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p class="text-sm text-blue-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                Total de ${pecas.length} peça(s) cadastrada(s) | 
+                Use a API <code class="bg-white px-2 py-1 rounded">/api/pecas</code> para gerenciar
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar peças</div>`;
+      }
     }
   },
 
   Servicos: {
     async render() {
       const content = document.getElementById('content');
-      content.innerHTML = `
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Módulo de Serviços - Em Desenvolvimento</h3>
-        </div>
-      `;
+      try {
+        const response = await api.get('/servicos');
+        const servicos = response.data;
+
+        // Agrupar por categoria
+        const categorias = [...new Set(servicos.map(s => s.categoria))];
+
+        content.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-bold text-gray-800">Tipos de Serviço</h3>
+              <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Novo Serviço
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              ${categorias.map(cat => {
+                const servicosCat = servicos.filter(s => s.categoria === cat);
+                const icons = {
+                  'MECANICA': 'fa-wrench',
+                  'ELETRICA': 'fa-bolt',
+                  'FUNILARIA': 'fa-hammer',
+                  'PINTURA': 'fa-paint-roller',
+                  'PREVENTIVA': 'fa-shield-alt',
+                  'DIAGNOSTICO': 'fa-stethoscope'
+                };
+                return `
+                  <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                      <div class="bg-blue-100 rounded-full p-3 mr-3">
+                        <i class="fas ${icons[cat] || 'fa-tools'} text-blue-600"></i>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-gray-800">${cat}</h4>
+                        <p class="text-sm text-gray-500">${servicosCat.length} serviço(s)</p>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoria</th>
+                      <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Preço Padrão</th>
+                      <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Tempo Est.</th>
+                      <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    ${servicos.map(s => `
+                      <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                          <div class="text-sm font-medium text-gray-900">${s.nome}</div>
+                          ${s.descricao ? `<div class="text-xs text-gray-500">${s.descricao}</div>` : ''}
+                        </td>
+                        <td class="px-6 py-4">
+                          <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            ${s.categoria}
+                          </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 text-right">${Utils.formatCurrency(s.preco_padrao)}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600 text-center">${s.tempo_estimado || '-'}</td>
+                        <td class="px-6 py-4 text-center">
+                          <button class="text-green-600 hover:text-green-800 mx-1" title="Editar">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p class="text-sm text-blue-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                Total de ${servicos.length} tipo(s) de serviço cadastrado(s) | 
+                Use a API <code class="bg-white px-2 py-1 rounded">/api/servicos</code> para gerenciar
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar serviços</div>`;
+      }
     }
   },
 
   Mecanicos: {
     async render() {
       const content = document.getElementById('content');
-      content.innerHTML = `
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Módulo de Mecânicos - Em Desenvolvimento</h3>
-        </div>
-      `;
+      try {
+        const response = await api.get('/mecanicos');
+        const mecanicos = response.data;
+
+        content.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-bold text-gray-800">Mecânicos</h3>
+              <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Novo Mecânico
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              ${mecanicos.map(m => `
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center">
+                      <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-user-tie text-blue-600 text-xl"></i>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-gray-800">${m.nome}</h4>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${m.ativo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                          ${m.ativo ? 'Ativo' : 'Inativo'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="space-y-2 text-sm text-gray-600">
+                    <p><i class="fas fa-briefcase w-5"></i> ${m.especialidade || 'Sem especialidade'}</p>
+                    <p><i class="fas fa-phone w-5"></i> ${m.telefone || '-'}</p>
+                    ${m.salario ? `<p><i class="fas fa-dollar-sign w-5"></i> ${Utils.formatCurrency(m.salario)}</p>` : ''}
+                    ${m.comissao_percentual ? `<p><i class="fas fa-percentage w-5"></i> Comissão: ${m.comissao_percentual}%</p>` : ''}
+                  </div>
+
+                  <div class="mt-4 pt-4 border-t border-gray-200 flex justify-end">
+                    <button class="text-blue-600 hover:text-blue-800 mx-1" title="Desempenho">
+                      <i class="fas fa-chart-line"></i>
+                    </button>
+                    <button class="text-green-600 hover:text-green-800 mx-1" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p class="text-sm text-blue-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                Total de ${mecanicos.length} mecânico(s) cadastrado(s) | 
+                Use a API <code class="bg-white px-2 py-1 rounded">/api/mecanicos</code> para gerenciar
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar mecânicos</div>`;
+      }
     }
   },
 
   Fornecedores: {
     async render() {
       const content = document.getElementById('content');
-      content.innerHTML = `
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Módulo de Fornecedores - Em Desenvolvimento</h3>
-        </div>
-      `;
+      try {
+        const response = await api.get('/fornecedores');
+        const fornecedores = response.data;
+
+        content.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-bold text-gray-800">Fornecedores</h3>
+              <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Novo Fornecedor
+              </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Razão Social</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CNPJ</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contato</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefone</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                      <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    ${fornecedores.map(f => `
+                      <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                          <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0 bg-green-100 rounded-full flex items-center justify-center">
+                              <i class="fas fa-truck text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                              <div class="text-sm font-medium text-gray-900">${f.razao_social}</div>
+                              ${f.nome_fantasia ? `<div class="text-xs text-gray-500">${f.nome_fantasia}</div>` : ''}
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${f.cnpj || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${f.contato || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${f.telefone || '-'}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600">${f.email || '-'}</td>
+                        <td class="px-6 py-4 text-center">
+                          <button class="text-blue-600 hover:text-blue-800 mx-1" title="Pedidos">
+                            <i class="fas fa-shopping-cart"></i>
+                          </button>
+                          <button class="text-green-600 hover:text-green-800 mx-1" title="Editar">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p class="text-sm text-blue-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                Total de ${fornecedores.length} fornecedor(es) cadastrado(s) | 
+                Use a API <code class="bg-white px-2 py-1 rounded">/api/fornecedores</code> para gerenciar
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="text-red-600">Erro ao carregar fornecedores</div>`;
+      }
     }
   },
 
