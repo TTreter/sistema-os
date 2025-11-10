@@ -1359,6 +1359,325 @@ const Pages = {
   }
 };
 
+// Sistema de Modals
+const Modal = {
+  show: (title, content, onSave) => {
+    const modalContainer = document.getElementById('modal-container');
+    modalContainer.innerHTML = `
+      <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" id="modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800">${title}</h3>
+            <button onclick="Modal.close()" class="text-gray-400 hover:text-gray-600">
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+          <div class="p-6" id="modal-content">
+            ${content}
+          </div>
+          <div class="flex justify-end space-x-3 p-6 border-t border-gray-200">
+            <button onclick="Modal.close()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+              Cancelar
+            </button>
+            <button id="modal-save-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              Salvar
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.getElementById('modal-save-btn').onclick = onSave;
+    document.getElementById('modal-backdrop').onclick = (e) => {
+      if (e.target.id === 'modal-backdrop') Modal.close();
+    };
+  },
+  
+  close: () => {
+    document.getElementById('modal-container').innerHTML = '';
+  }
+};
+
+// Formulários de Cadastro
+const Forms = {
+  novoCliente: () => {
+    Modal.show('Novo Cliente', `
+      <form id="form-cliente" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+            <input type="text" name="nome" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">CPF/CNPJ</label>
+            <input type="text" name="cpf_cnpj" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone *</label>
+            <input type="text" name="telefone" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+            <input type="text" name="endereco" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+            <input type="text" name="cidade" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+            <input type="text" name="estado" maxlength="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+            <textarea name="observacoes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+        </div>
+      </form>
+    `, async () => {
+      const form = document.getElementById('form-cliente');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        await api.post('/clientes', data);
+        Utils.showToast('Cliente cadastrado com sucesso!', 'success');
+        Modal.close();
+        PageManager.loadPage('clientes');
+      } catch (error) {
+        Utils.showToast('Erro ao cadastrar cliente: ' + error.message, 'error');
+      }
+    });
+  },
+
+  novoVeiculo: async () => {
+    const clientes = await api.get('/clientes?ativo=true');
+    
+    Modal.show('Novo Veículo', `
+      <form id="form-veiculo" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Placa *</label>
+            <input type="text" name="placa" required maxlength="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+            <select name="cliente_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="">Selecione...</option>
+              ${clientes.data.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Marca *</label>
+            <input type="text" name="marca" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Modelo *</label>
+            <input type="text" name="modelo" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Ano</label>
+            <input type="number" name="ano" min="1900" max="2099" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Cor</label>
+            <input type="text" name="cor" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">KM Atual</label>
+            <input type="number" name="km_atual" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Chassis</label>
+            <input type="text" name="chassis" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+      </form>
+    `, async () => {
+      const form = document.getElementById('form-veiculo');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        await api.post('/veiculos', data);
+        Utils.showToast('Veículo cadastrado com sucesso!', 'success');
+        Modal.close();
+        PageManager.loadPage('veiculos');
+      } catch (error) {
+        Utils.showToast('Erro ao cadastrar veículo: ' + error.message, 'error');
+      }
+    });
+  },
+
+  novaPeca: () => {
+    Modal.show('Nova Peça', `
+      <form id="form-peca" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Código *</label>
+            <input type="text" name="codigo" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+            <input type="text" name="nome" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+            <input type="text" name="marca" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+            <input type="text" name="categoria" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Preço Custo *</label>
+            <input type="number" name="preco_custo" required step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Preço Venda *</label>
+            <input type="number" name="preco_venda" required step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Estoque Atual</label>
+            <input type="number" name="estoque_atual" value="0" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Estoque Mínimo</label>
+            <input type="number" name="estoque_minimo" value="5" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Localização</label>
+            <input type="text" name="localizacao" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+      </form>
+    `, async () => {
+      const form = document.getElementById('form-peca');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        await api.post('/pecas', data);
+        Utils.showToast('Peça cadastrada com sucesso!', 'success');
+        Modal.close();
+        PageManager.loadPage('pecas');
+      } catch (error) {
+        Utils.showToast('Erro ao cadastrar peça: ' + error.message, 'error');
+      }
+    });
+  },
+
+  novaOS: async () => {
+    const clientes = await api.get('/clientes?ativo=true');
+    const veiculos = await api.get('/veiculos');
+    const mecanicos = await api.get('/mecanicos');
+    
+    Modal.show('Nova Ordem de Serviço', `
+      <form id="form-os" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+            <select name="cliente_id" required id="os-cliente" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="">Selecione...</option>
+              ${clientes.data.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Veículo *</label>
+            <select name="veiculo_id" required id="os-veiculo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="">Selecione um cliente primeiro</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Mecânico</label>
+            <select name="mecanico_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="">Nenhum</option>
+              ${mecanicos.data.map(m => `<option value="${m.id}">${m.nome} - ${m.especialidade || 'Geral'}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">KM Entrada</label>
+            <input type="number" name="km_entrada" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Defeito Reclamado *</label>
+            <textarea name="defeito_reclamado" required rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+            <textarea name="observacoes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+        </div>
+      </form>
+      <script>
+        document.getElementById('os-cliente').addEventListener('change', async (e) => {
+          const clienteId = e.target.value;
+          const selectVeiculo = document.getElementById('os-veiculo');
+          
+          if (!clienteId) {
+            selectVeiculo.innerHTML = '<option value="">Selecione um cliente primeiro</option>';
+            return;
+          }
+          
+          const veiculos = ${JSON.stringify(veiculos.data)};
+          const veiculosCliente = veiculos.filter(v => v.cliente_id == clienteId);
+          
+          if (veiculosCliente.length === 0) {
+            selectVeiculo.innerHTML = '<option value="">Cliente sem veículos cadastrados</option>';
+          } else {
+            selectVeiculo.innerHTML = '<option value="">Selecione...</option>' + 
+              veiculosCliente.map(v => 
+                '<option value="' + v.id + '">' + v.placa + ' - ' + v.marca + ' ' + v.modelo + '</option>'
+              ).join('');
+          }
+        });
+      </script>
+    `, async () => {
+      const form = document.getElementById('form-os');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      
+      // Remover campos vazios
+      Object.keys(data).forEach(key => {
+        if (data[key] === '' || data[key] === null) delete data[key];
+      });
+      
+      try {
+        await api.post('/ordens-servico', data);
+        Utils.showToast('Ordem de Serviço criada com sucesso!', 'success');
+        Modal.close();
+        PageManager.loadPage('ordens-servico');
+      } catch (error) {
+        Utils.showToast('Erro ao criar OS: ' + error.message, 'error');
+      }
+    });
+  }
+};
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
   // Navegação da sidebar
@@ -1369,9 +1688,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Botão Nova OS
+  // Botão Nova OS (header)
   document.getElementById('btn-nova-os').addEventListener('click', () => {
-    PageManager.loadPage('ordens-servico');
+    Forms.novaOS();
   });
 
   // Busca rápida
@@ -1390,6 +1709,27 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Erro na busca:', error);
         }
       }, 500);
+    }
+  });
+
+  // Event delegation para botões dinâmicos
+  document.getElementById('content').addEventListener('click', (e) => {
+    const button = e.target.closest('button');
+    if (!button) return;
+    
+    // Botões de cadastro
+    if (button.textContent.includes('Novo Cliente')) {
+      e.preventDefault();
+      Forms.novoCliente();
+    } else if (button.textContent.includes('Novo Veículo')) {
+      e.preventDefault();
+      Forms.novoVeiculo();
+    } else if (button.textContent.includes('Nova Peça')) {
+      e.preventDefault();
+      Forms.novaPeca();
+    } else if (button.textContent.includes('Nova OS') || button.id === 'btn-nova-os-page') {
+      e.preventDefault();
+      Forms.novaOS();
     }
   });
 
