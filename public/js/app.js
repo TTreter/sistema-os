@@ -469,7 +469,7 @@ const Pages = {
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     ${clientes.map(c => `
-                      <tr class="hover:bg-gray-50">
+                      <tr class="hover:bg-gray-50" data-id="${c.id}">
                         <td class="px-6 py-4">
                           <div class="flex items-center">
                             <div class="h-10 w-10 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center">
@@ -546,7 +546,7 @@ const Pages = {
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     ${veiculos.map(v => `
-                      <tr class="hover:bg-gray-50">
+                      <tr class="hover:bg-gray-50" data-id="${v.id}">
                         <td class="px-6 py-4">
                           <span class="font-semibold text-gray-800">${v.placa}</span>
                         </td>
@@ -637,7 +637,7 @@ const Pages = {
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     ${pecas.map(p => `
-                      <tr class="hover:bg-gray-50">
+                      <tr class="hover:bg-gray-50" data-id="${p.id}">
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">${p.codigo}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">${p.nome}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">${p.categoria || '-'}</td>
@@ -740,7 +740,7 @@ const Pages = {
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     ${servicos.map(s => `
-                      <tr class="hover:bg-gray-50">
+                      <tr class="hover:bg-gray-50" data-id="${s.id}">
                         <td class="px-6 py-4">
                           <div class="text-sm font-medium text-gray-900">${s.nome}</div>
                           ${s.descricao ? `<div class="text-xs text-gray-500">${s.descricao}</div>` : ''}
@@ -798,7 +798,7 @@ const Pages = {
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               ${mecanicos.map(m => `
-                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition" data-id="${m.id}">
                   <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center">
                       <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
@@ -879,7 +879,7 @@ const Pages = {
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                     ${fornecedores.map(f => `
-                      <tr class="hover:bg-gray-50">
+                      <tr class="hover:bg-gray-50" data-id="${f.id}">
                         <td class="px-6 py-4">
                           <div class="flex items-center">
                             <div class="h-10 w-10 flex-shrink-0 bg-green-100 rounded-full flex items-center justify-center">
@@ -1398,6 +1398,129 @@ const Modal = {
   }
 };
 
+// Ações Especiais
+const Actions = {
+  async verPerfilCRM(clienteId) {
+    try {
+      const response = await api.get(`/crm/clientes/${clienteId}/perfil-360`);
+      const perfil = response.data;
+      
+      Modal.show(`Perfil CRM - ${perfil.cliente.nome}`, `
+        <div class="space-y-6">
+          <!-- Dados Básicos -->
+          <div class="border-b pb-4">
+            <h4 class="font-semibold text-gray-800 mb-3">Dados do Cliente</h4>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div><span class="text-gray-600">CPF/CNPJ:</span> ${perfil.cliente.cpf_cnpj || '-'}</div>
+              <div><span class="text-gray-600">Telefone:</span> ${perfil.cliente.telefone || '-'}</div>
+              <div><span class="text-gray-600">Email:</span> ${perfil.cliente.email || '-'}</div>
+              <div><span class="text-gray-600">Cliente desde:</span> ${Utils.formatDate(perfil.cliente.data_cadastro)}</div>
+            </div>
+          </div>
+          
+          <!-- Estatísticas -->
+          <div class="border-b pb-4">
+            <h4 class="font-semibold text-gray-800 mb-3">Estatísticas</h4>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div class="bg-blue-50 p-3 rounded">
+                <p class="text-2xl font-bold text-blue-600">${perfil.estatisticas.total_os || 0}</p>
+                <p class="text-xs text-gray-600">OS Total</p>
+              </div>
+              <div class="bg-green-50 p-3 rounded">
+                <p class="text-2xl font-bold text-green-600">${Utils.formatCurrency(perfil.estatisticas.valor_total_gasto || 0)}</p>
+                <p class="text-xs text-gray-600">Gasto Total</p>
+              </div>
+              <div class="bg-purple-50 p-3 rounded">
+                <p class="text-2xl font-bold text-purple-600">${Utils.formatCurrency(perfil.estatisticas.ticket_medio || 0)}</p>
+                <p class="text-xs text-gray-600">Ticket Médio</p>
+              </div>
+              <div class="bg-yellow-50 p-3 rounded">
+                <p class="text-2xl font-bold text-yellow-600">${perfil.analise_retencao?.score_risco || 0}</p>
+                <p class="text-xs text-gray-600">Risco Perda</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Veículos -->
+          <div class="border-b pb-4">
+            <h4 class="font-semibold text-gray-800 mb-3">Veículos (${perfil.veiculos.length})</h4>
+            ${perfil.veiculos.length > 0 ? `
+              <div class="space-y-2">
+                ${perfil.veiculos.map(v => `
+                  <div class="bg-gray-50 p-3 rounded text-sm">
+                    <span class="font-semibold">${v.placa}</span> - ${v.marca} ${v.modelo} (${v.ano || '-'})
+                    ${v.km_atual ? ` - ${v.km_atual.toLocaleString()} km` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            ` : '<p class="text-sm text-gray-500">Nenhum veículo cadastrado</p>'}
+          </div>
+          
+          <!-- Últimas OS -->
+          <div class="border-b pb-4">
+            <h4 class="font-semibold text-gray-800 mb-3">Últimas Ordens de Serviço</h4>
+            ${perfil.ultimas_os.length > 0 ? `
+              <div class="space-y-2 max-h-48 overflow-y-auto">
+                ${perfil.ultimas_os.map(os => `
+                  <div class="bg-gray-50 p-3 rounded text-sm">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <span class="font-semibold text-blue-600">${os.numero}</span>
+                        <span class="ml-2">${Utils.getStatusBadge(os.status)}</span>
+                        <p class="text-xs text-gray-600 mt-1">${Utils.formatDate(os.data_abertura)}</p>
+                      </div>
+                      <span class="font-semibold">${Utils.formatCurrency(os.valor_total)}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : '<p class="text-sm text-gray-500">Nenhuma OS encontrada</p>'}
+          </div>
+          
+          <!-- Pesquisas de Satisfação -->
+          ${perfil.pesquisas_satisfacao && perfil.pesquisas_satisfacao.length > 0 ? `
+            <div class="border-b pb-4">
+              <h4 class="font-semibold text-gray-800 mb-3">Satisfação</h4>
+              <div class="space-y-2">
+                ${perfil.pesquisas_satisfacao.map(p => `
+                  <div class="bg-gray-50 p-3 rounded text-sm">
+                    <div class="flex justify-between">
+                      <span>OS ${p.os_numero}</span>
+                      <span class="font-semibold ${p.nota_geral >= 8 ? 'text-green-600' : p.nota_geral >= 6 ? 'text-yellow-600' : 'text-red-600'}">
+                        ${p.nota_geral || '-'}/10
+                      </span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+          
+          <!-- Lembretes Pendentes -->
+          ${perfil.lembretes_pendentes && perfil.lembretes_pendentes.length > 0 ? `
+            <div>
+              <h4 class="font-semibold text-gray-800 mb-3">Lembretes Pendentes (${perfil.lembretes_pendentes.length})</h4>
+              <div class="space-y-2">
+                ${perfil.lembretes_pendentes.map(l => `
+                  <div class="bg-yellow-50 p-3 rounded text-sm border-l-4 border-yellow-400">
+                    <p class="font-semibold">${l.tipo_manutencao || 'Manutenção'}</p>
+                    <p class="text-xs text-gray-600">${l.descricao}</p>
+                    <p class="text-xs text-gray-500 mt-1">Data: ${Utils.formatDate(l.data_proxima)}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `, () => {
+        Modal.close();
+      });
+    } catch (error) {
+      Utils.showToast('Erro ao carregar perfil CRM: ' + error.message, 'error');
+    }
+  }
+};
+
 // Formulários de Cadastro
 const Forms = {
   novoCliente: () => {
@@ -1675,6 +1798,416 @@ const Forms = {
         Utils.showToast('Erro ao criar OS: ' + error.message, 'error');
       }
     });
+  },
+
+  // ===== FUNÇÕES DE EDIÇÃO =====
+  
+  editarCliente: async (id) => {
+    try {
+      const response = await api.get(`/clientes/${id}`);
+      const cliente = response.data;
+      
+      Modal.show('Editar Cliente', `
+        <form id="form-cliente-edit" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+              <input type="text" name="nome" required value="${cliente.nome || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">CPF/CNPJ</label>
+              <input type="text" name="cpf_cnpj" value="${cliente.cpf_cnpj || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Telefone *</label>
+              <input type="text" name="telefone" required value="${cliente.telefone || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input type="email" name="email" value="${cliente.email || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+              <input type="text" name="endereco" value="${cliente.endereco || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+              <input type="text" name="cidade" value="${cliente.cidade || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+              <input type="text" name="estado" maxlength="2" value="${cliente.estado || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+              <textarea name="observacoes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">${cliente.observacoes || ''}</textarea>
+            </div>
+          </div>
+        </form>
+      `, async () => {
+        const form = document.getElementById('form-cliente-edit');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        try {
+          await api.put(`/clientes/${id}`, data);
+          Utils.showToast('Cliente atualizado com sucesso!', 'success');
+          Modal.close();
+          PageManager.loadPage('clientes');
+        } catch (error) {
+          Utils.showToast('Erro ao atualizar cliente: ' + error.message, 'error');
+        }
+      });
+    } catch (error) {
+      Utils.showToast('Erro ao carregar dados do cliente: ' + error.message, 'error');
+    }
+  },
+
+  editarVeiculo: async (id) => {
+    try {
+      const [veiculoRes, clientesRes] = await Promise.all([
+        api.get(`/veiculos/${id}`),
+        api.get('/clientes?ativo=true')
+      ]);
+      const veiculo = veiculoRes.data;
+      const clientes = clientesRes.data;
+      
+      Modal.show('Editar Veículo', `
+        <form id="form-veiculo-edit" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Placa *</label>
+              <input type="text" name="placa" required maxlength="8" value="${veiculo.placa || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+              <select name="cliente_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                ${clientes.map(c => `<option value="${c.id}" ${c.id === veiculo.cliente_id ? 'selected' : ''}>${c.nome}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Marca *</label>
+              <input type="text" name="marca" required value="${veiculo.marca || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Modelo *</label>
+              <input type="text" name="modelo" required value="${veiculo.modelo || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Ano</label>
+              <input type="number" name="ano" min="1900" max="2099" value="${veiculo.ano || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Cor</label>
+              <input type="text" name="cor" value="${veiculo.cor || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">KM Atual</label>
+              <input type="number" name="km_atual" min="0" value="${veiculo.km_atual || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Chassis</label>
+              <input type="text" name="chassis" value="${veiculo.chassis || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+        </form>
+      `, async () => {
+        const form = document.getElementById('form-veiculo-edit');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        try {
+          await api.put(`/veiculos/${id}`, data);
+          Utils.showToast('Veículo atualizado com sucesso!', 'success');
+          Modal.close();
+          PageManager.loadPage('veiculos');
+        } catch (error) {
+          Utils.showToast('Erro ao atualizar veículo: ' + error.message, 'error');
+        }
+      });
+    } catch (error) {
+      Utils.showToast('Erro ao carregar dados do veículo: ' + error.message, 'error');
+    }
+  },
+
+  editarPeca: async (id) => {
+    try {
+      const response = await api.get(`/pecas/${id}`);
+      const peca = response.data;
+      
+      Modal.show('Editar Peça', `
+        <form id="form-peca-edit" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Código *</label>
+              <input type="text" name="codigo" required value="${peca.codigo || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+              <input type="text" name="nome" required value="${peca.nome || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+              <input type="text" name="marca" value="${peca.marca || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+              <input type="text" name="categoria" value="${peca.categoria || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Preço Custo *</label>
+              <input type="number" name="preco_custo" required step="0.01" min="0" value="${peca.preco_custo || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Preço Venda *</label>
+              <input type="number" name="preco_venda" required step="0.01" min="0" value="${peca.preco_venda || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estoque Atual</label>
+              <input type="number" name="estoque_atual" min="0" value="${peca.estoque_atual || 0}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estoque Mínimo</label>
+              <input type="number" name="estoque_minimo" min="0" value="${peca.estoque_minimo || 5}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Localização</label>
+              <input type="text" name="localizacao" value="${peca.localizacao || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+        </form>
+      `, async () => {
+        const form = document.getElementById('form-peca-edit');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        try {
+          await api.put(`/pecas/${id}`, data);
+          Utils.showToast('Peça atualizada com sucesso!', 'success');
+          Modal.close();
+          PageManager.loadPage('pecas');
+        } catch (error) {
+          Utils.showToast('Erro ao atualizar peça: ' + error.message, 'error');
+        }
+      });
+    } catch (error) {
+      Utils.showToast('Erro ao carregar dados da peça: ' + error.message, 'error');
+    }
+  },
+
+  editarServico: async (id) => {
+    try {
+      const response = await api.get(`/servicos/${id}`);
+      const servico = response.data;
+      
+      Modal.show('Editar Serviço', `
+        <form id="form-servico-edit" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+              <input type="text" name="nome" required value="${servico.nome || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Categoria *</label>
+              <select name="categoria" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="MECANICA" ${servico.categoria === 'MECANICA' ? 'selected' : ''}>Mecânica</option>
+                <option value="ELETRICA" ${servico.categoria === 'ELETRICA' ? 'selected' : ''}>Elétrica</option>
+                <option value="FUNILARIA" ${servico.categoria === 'FUNILARIA' ? 'selected' : ''}>Funilaria</option>
+                <option value="PINTURA" ${servico.categoria === 'PINTURA' ? 'selected' : ''}>Pintura</option>
+                <option value="PREVENTIVA" ${servico.categoria === 'PREVENTIVA' ? 'selected' : ''}>Preventiva</option>
+                <option value="DIAGNOSTICO" ${servico.categoria === 'DIAGNOSTICO' ? 'selected' : ''}>Diagnóstico</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Preço Padrão *</label>
+              <input type="number" name="preco_padrao" required step="0.01" min="0" value="${servico.preco_padrao || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tempo Estimado</label>
+              <input type="text" name="tempo_estimado" value="${servico.tempo_estimado || ''}" placeholder="Ex: 2h, 30min" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+              <textarea name="descricao" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">${servico.descricao || ''}</textarea>
+            </div>
+          </div>
+        </form>
+      `, async () => {
+        const form = document.getElementById('form-servico-edit');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        try {
+          await api.put(`/servicos/${id}`, data);
+          Utils.showToast('Serviço atualizado com sucesso!', 'success');
+          Modal.close();
+          PageManager.loadPage('servicos');
+        } catch (error) {
+          Utils.showToast('Erro ao atualizar serviço: ' + error.message, 'error');
+        }
+      });
+    } catch (error) {
+      Utils.showToast('Erro ao carregar dados do serviço: ' + error.message, 'error');
+    }
+  },
+
+  editarMecanico: async (id) => {
+    try {
+      const response = await api.get(`/mecanicos/${id}`);
+      const mecanico = response.data;
+      
+      Modal.show('Editar Mecânico', `
+        <form id="form-mecanico-edit" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+              <input type="text" name="nome" required value="${mecanico.nome || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+              <input type="text" name="cpf" value="${mecanico.cpf || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+              <input type="text" name="telefone" value="${mecanico.telefone || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input type="email" name="email" value="${mecanico.email || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Especialidade</label>
+              <input type="text" name="especialidade" value="${mecanico.especialidade || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Salário</label>
+              <input type="number" name="salario" step="0.01" min="0" value="${mecanico.salario || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Comissão (%)</label>
+              <input type="number" name="comissao_percentual" step="0.01" min="0" max="100" value="${mecanico.comissao_percentual || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select name="ativo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="1" ${mecanico.ativo ? 'selected' : ''}>Ativo</option>
+                <option value="0" ${!mecanico.ativo ? 'selected' : ''}>Inativo</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      `, async () => {
+        const form = document.getElementById('form-mecanico-edit');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        try {
+          await api.put(`/mecanicos/${id}`, data);
+          Utils.showToast('Mecânico atualizado com sucesso!', 'success');
+          Modal.close();
+          PageManager.loadPage('mecanicos');
+        } catch (error) {
+          Utils.showToast('Erro ao atualizar mecânico: ' + error.message, 'error');
+        }
+      });
+    } catch (error) {
+      Utils.showToast('Erro ao carregar dados do mecânico: ' + error.message, 'error');
+    }
+  },
+
+  editarFornecedor: async (id) => {
+    try {
+      const response = await api.get(`/fornecedores/${id}`);
+      const fornecedor = response.data;
+      
+      Modal.show('Editar Fornecedor', `
+        <form id="form-fornecedor-edit" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Razão Social *</label>
+              <input type="text" name="razao_social" required value="${fornecedor.razao_social || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nome Fantasia</label>
+              <input type="text" name="nome_fantasia" value="${fornecedor.nome_fantasia || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">CNPJ *</label>
+              <input type="text" name="cnpj" required value="${fornecedor.cnpj || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Contato</label>
+              <input type="text" name="contato" value="${fornecedor.contato || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+              <input type="text" name="telefone" value="${fornecedor.telefone || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input type="email" name="email" value="${fornecedor.email || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+              <input type="text" name="endereco" value="${fornecedor.endereco || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+              <input type="text" name="cidade" value="${fornecedor.cidade || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+              <input type="text" name="estado" maxlength="2" value="${fornecedor.estado || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+        </form>
+      `, async () => {
+        const form = document.getElementById('form-fornecedor-edit');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        try {
+          await api.put(`/fornecedores/${id}`, data);
+          Utils.showToast('Fornecedor atualizado com sucesso!', 'success');
+          Modal.close();
+          PageManager.loadPage('fornecedores');
+        } catch (error) {
+          Utils.showToast('Erro ao atualizar fornecedor: ' + error.message, 'error');
+        }
+      });
+    } catch (error) {
+      Utils.showToast('Erro ao carregar dados do fornecedor: ' + error.message, 'error');
+    }
   }
 };
 
@@ -1713,7 +2246,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Event delegation para botões dinâmicos
-  document.getElementById('content').addEventListener('click', (e) => {
+  document.getElementById('content').addEventListener('click', async (e) => {
     const button = e.target.closest('button');
     if (!button) return;
     
@@ -1731,7 +2264,66 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       Forms.novaOS();
     }
+    
+    // Botões de ação (Ver Perfil, Editar, etc.)
+    const row = button.closest('tr') || button.closest('[data-id]');
+    if (!row) return;
+    
+    // Ver Perfil CRM
+    if (button.title === 'Ver Perfil CRM') {
+      e.preventDefault();
+      const clienteId = getRowId(row);
+      if (clienteId) await Actions.verPerfilCRM(clienteId);
+    }
+    
+    // Editar Cliente
+    else if (button.title === 'Editar' && AppState.currentPage === 'clientes') {
+      e.preventDefault();
+      const clienteId = getRowId(row);
+      if (clienteId) await Forms.editarCliente(clienteId);
+    }
+    
+    // Editar Veículo
+    else if (button.title === 'Editar' && AppState.currentPage === 'veiculos') {
+      e.preventDefault();
+      const veiculoId = getRowId(row);
+      if (veiculoId) await Forms.editarVeiculo(veiculoId);
+    }
+    
+    // Editar Peça
+    else if (button.title === 'Editar' && AppState.currentPage === 'pecas') {
+      e.preventDefault();
+      const pecaId = getRowId(row);
+      if (pecaId) await Forms.editarPeca(pecaId);
+    }
+    
+    // Editar Serviço
+    else if (button.title === 'Editar' && AppState.currentPage === 'servicos') {
+      e.preventDefault();
+      const servicoId = getRowId(row);
+      if (servicoId) await Forms.editarServico(servicoId);
+    }
+    
+    // Editar Mecânico
+    else if (button.title === 'Editar' && AppState.currentPage === 'mecanicos') {
+      e.preventDefault();
+      const mecanicoId = getRowId(row);
+      if (mecanicoId) await Forms.editarMecanico(mecanicoId);
+    }
+    
+    // Editar Fornecedor
+    else if (button.title === 'Editar' && AppState.currentPage === 'fornecedores') {
+      e.preventDefault();
+      const fornecedorId = getRowId(row);
+      if (fornecedorId) await Forms.editarFornecedor(fornecedorId);
+    }
   });
+  
+  // Helper para extrair ID da row
+  function getRowId(row) {
+    // O ID será armazenado como data-id na row
+    return row.dataset.id;
+  }
 
   // Carregar página inicial
   PageManager.loadPage('dashboard');
