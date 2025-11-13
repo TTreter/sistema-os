@@ -1,4 +1,19 @@
-// Configuração global do Axios
+/**
+ * tGest - Sistema de Gestão de Oficinas v4.0.0
+ * Frontend Application - Main JavaScript File
+ * 
+ * Este arquivo contém toda a lógica do frontend do sistema,
+ * incluindo gerenciamento de páginas, modais, formulários e integrações com API.
+ */
+
+// ========================================
+// CONFIGURAÇÃO GLOBAL
+// ========================================
+
+/**
+ * Instância do Axios configurada para comunicação com a API
+ * Timeout de 30 segundos para todas as requisições
+ */
 const api = axios.create({
   baseURL: '/api',
   timeout: 30000,
@@ -7,20 +22,34 @@ const api = axios.create({
   }
 });
 
-// Estado global da aplicação
+/**
+ * Estado global da aplicação
+ * Mantém controle da página atual e cache de dados
+ */
 const AppState = {
-  currentPage: 'dashboard',
-  currentData: null,
-  clientes: [],
-  veiculos: [],
-  pecas: [],
-  mecanicos: [],
-  servicos: [],
-  fornecedores: []
+  currentPage: 'dashboard',      // Página atualmente exibida
+  currentData: null,              // Dados da página atual (cache)
+  clientes: [],                   // Cache de clientes
+  veiculos: [],                   // Cache de veículos
+  pecas: [],                      // Cache de peças
+  mecanicos: [],                  // Cache de mecânicos
+  servicos: [],                   // Cache de serviços
+  fornecedores: []                // Cache de fornecedores
 };
 
-// Utilitários
+// ========================================
+// UTILITÁRIOS
+// ========================================
+
+/**
+ * Funções utilitárias para formatação e exibição
+ */
 const Utils = {
+  /**
+   * Formata valor numérico para moeda brasileira (R$)
+   * @param {number} value - Valor a ser formatado
+   * @returns {string} Valor formatado (ex: "R$ 1.234,56")
+   */
   formatCurrency: (value) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -28,18 +57,33 @@ const Utils = {
     }).format(value || 0);
   },
 
+  /**
+   * Formata string de data para formato brasileiro (DD/MM/YYYY)
+   * @param {string} dateString - Data em formato ISO
+   * @returns {string} Data formatada ou "-" se vazia
+   */
   formatDate: (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR');
   },
 
+  /**
+   * Formata string de data/hora para formato brasileiro completo
+   * @param {string} dateString - Data/hora em formato ISO
+   * @returns {string} Data/hora formatada ou "-" se vazia
+   */
   formatDateTime: (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
     return date.toLocaleString('pt-BR');
   },
 
+  /**
+   * Exibe notificação toast no canto superior direito
+   * @param {string} message - Mensagem a ser exibida
+   * @param {string} type - Tipo de notificação: success, error, warning, info
+   */
   showToast: (message, type = 'success') => {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -72,6 +116,9 @@ const Utils = {
     }, 3000);
   },
 
+  /**
+   * Exibe indicador de carregamento no conteúdo principal
+   */
   showLoading: () => {
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -84,6 +131,11 @@ const Utils = {
     `;
   },
 
+  /**
+   * Retorna badge HTML colorido baseado no status da OS
+   * @param {string} status - Status da ordem de serviço
+   * @returns {string} HTML do badge formatado
+   */
   getStatusBadge: (status) => {
     const statusMap = {
       'AGUARDANDO_DIAGNOSTICO': { color: 'yellow', text: 'Aguardando Diagnóstico' },
@@ -100,8 +152,18 @@ const Utils = {
   }
 };
 
-// Gerenciador de Páginas
+// ========================================
+// GERENCIADOR DE PÁGINAS
+// ========================================
+
+/**
+ * Controla navegação e renderização de páginas
+ */
 const PageManager = {
+  /**
+   * Carrega e renderiza uma página específica
+   * @param {string} pageName - Nome da página a ser carregada
+   */
   async loadPage(pageName) {
     AppState.currentPage = pageName;
     
@@ -195,7 +257,14 @@ const PageManager = {
   }
 };
 
-// Definição das Páginas (será estendido nos próximos arquivos)
+// ========================================
+// DEFINIÇÃO DAS PÁGINAS
+// ========================================
+
+/**
+ * Objeto contendo todas as páginas do sistema
+ * Cada página tem um método render() que gera o HTML e faz chamadas à API
+ */
 const Pages = {
   Dashboard: {
     async render() {
@@ -1359,8 +1428,20 @@ const Pages = {
   }
 };
 
-// Sistema de Modals
+// ========================================
+// SISTEMA DE MODALS
+// ========================================
+
+/**
+ * Sistema de modal reutilizável para formulários e visualizações
+ */
 const Modal = {
+  /**
+   * Exibe modal com título, conteúdo e callback de salvamento
+   * @param {string} title - Título do modal
+   * @param {string} content - HTML do conteúdo (geralmente um formulário)
+   * @param {function} onSave - Callback executado ao clicar em Salvar
+   */
   show: (title, content, onSave) => {
     const modalContainer = document.getElementById('modal-container');
     modalContainer.innerHTML = `
@@ -1393,15 +1474,29 @@ const Modal = {
     };
   },
   
+  /**
+   * Fecha o modal e limpa o container
+   */
   close: () => {
     document.getElementById('modal-container').innerHTML = '';
   }
 };
 
-// Ações Especiais
+// ========================================
+// AÇÕES ESPECIAIS
+// ========================================
+
+/**
+ * Funções especiais como visualização de perfil CRM
+ */
 const Actions = {
+  /**
+   * Exibe perfil 360° completo do cliente com histórico, estatísticas e análise
+   * @param {number} clienteId - ID do cliente
+   */
   async verPerfilCRM(clienteId) {
     try {
+      // Busca perfil completo do cliente via API CRM
       const response = await api.get(`/crm/clientes/${clienteId}/perfil-360`);
       const perfil = response.data;
       
@@ -1521,8 +1616,21 @@ const Actions = {
   }
 };
 
-// Formulários de Cadastro
+// ========================================
+// FORMULÁRIOS DE CADASTRO E EDIÇÃO
+// ========================================
+
+/**
+ * Objeto contendo todos os formulários de cadastro e edição
+ * Cada formulário abre um modal, coleta dados e envia para a API
+ */
 const Forms = {
+  
+  // ===== FORMULÁRIOS DE CADASTRO (NOVO) =====
+  
+  /**
+   * Abre modal para cadastrar novo cliente
+   */
   novoCliente: () => {
     Modal.show('Novo Cliente', `
       <form id="form-cliente" class="space-y-4">
@@ -1582,6 +1690,10 @@ const Forms = {
     });
   },
 
+  /**
+   * Abre modal para cadastrar novo veículo
+   * Busca lista de clientes para seleção
+   */
   novoVeiculo: async () => {
     const clientes = await api.get('/clientes?ativo=true');
     
@@ -1646,6 +1758,9 @@ const Forms = {
     });
   },
 
+  /**
+   * Abre modal para cadastrar nova peça/produto
+   */
   novaPeca: () => {
     Modal.show('Nova Peça', `
       <form id="form-peca" class="space-y-4">
@@ -1709,6 +1824,11 @@ const Forms = {
     });
   },
 
+  /**
+   * Abre modal para criar nova Ordem de Serviço
+   * Busca clientes, veículos e mecânicos para seleção
+   * Implementa filtro dinâmico de veículos por cliente
+   */
   novaOS: async () => {
     const clientes = await api.get('/clientes?ativo=true');
     const veiculos = await api.get('/veiculos');
@@ -1800,8 +1920,12 @@ const Forms = {
     });
   },
 
-  // ===== FUNÇÕES DE EDIÇÃO =====
+  // ===== FORMULÁRIOS DE EDIÇÃO =====
   
+  /**
+   * Abre modal para editar cliente existente
+   * @param {number} id - ID do cliente a ser editado
+   */
   editarCliente: async (id) => {
     try {
       const response = await api.get(`/clientes/${id}`);
@@ -1868,6 +1992,10 @@ const Forms = {
     }
   },
 
+  /**
+   * Abre modal para editar veículo existente
+   * @param {number} id - ID do veículo a ser editado
+   */
   editarVeiculo: async (id) => {
     try {
       const [veiculoRes, clientesRes] = await Promise.all([
@@ -1940,6 +2068,10 @@ const Forms = {
     }
   },
 
+  /**
+   * Abre modal para editar peça existente
+   * @param {number} id - ID da peça a ser editada
+   */
   editarPeca: async (id) => {
     try {
       const response = await api.get(`/pecas/${id}`);
@@ -2010,6 +2142,10 @@ const Forms = {
     }
   },
 
+  /**
+   * Abre modal para editar serviço existente
+   * @param {number} id - ID do serviço a ser editado
+   */
   editarServico: async (id) => {
     try {
       const response = await api.get(`/servicos/${id}`);
@@ -2071,6 +2207,10 @@ const Forms = {
     }
   },
 
+  /**
+   * Abre modal para editar mecânico existente
+   * @param {number} id - ID do mecânico a ser editado
+   */
   editarMecanico: async (id) => {
     try {
       const response = await api.get(`/mecanicos/${id}`);
@@ -2140,6 +2280,10 @@ const Forms = {
     }
   },
 
+  /**
+   * Abre modal para editar fornecedor existente
+   * @param {number} id - ID do fornecedor a ser editado
+   */
   editarFornecedor: async (id) => {
     try {
       const response = await api.get(`/fornecedores/${id}`);
@@ -2211,7 +2355,14 @@ const Forms = {
   }
 };
 
-// Event Listeners
+// ========================================
+// EVENT LISTENERS E INICIALIZAÇÃO
+// ========================================
+
+/**
+ * Inicialização da aplicação quando o DOM estiver pronto
+ * Configura todos os event listeners e carrega a página inicial
+ */
 document.addEventListener('DOMContentLoaded', () => {
   // Navegação da sidebar
   document.querySelectorAll('[data-page]').forEach(link => {
@@ -2245,7 +2396,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Event delegation para botões dinâmicos
+  /**
+   * Event delegation para botões dinâmicos
+   * Captura cliques em botões gerados dinamicamente pelas páginas
+   * Identifica ação com base no texto do botão ou título (title attribute)
+   */
   document.getElementById('content').addEventListener('click', async (e) => {
     const button = e.target.closest('button');
     if (!button) return;
@@ -2319,9 +2474,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  // Helper para extrair ID da row
+  /**
+   * Helper para extrair ID da row/card
+   * @param {HTMLElement} row - Elemento tr (tabela) ou div (card) que contém data-id
+   * @returns {number} ID do registro
+   */
   function getRowId(row) {
-    // O ID será armazenado como data-id na row
     return row.dataset.id;
   }
 
