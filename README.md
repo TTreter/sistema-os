@@ -5,8 +5,8 @@ Sistema completo de gestão operacional para oficinas mecânicas, desenvolvido c
 ## 📋 Sobre o Projeto
 
 **Nome**: tGest - Sistema de Gestão de Oficinas  
-**Versão**: 3.0.0 (Fase 3 - Inteligência de Negócios)  
-**Objetivo**: Digitalizar e otimizar a operação de oficinas mecânicas com CRM, automações e business intelligence completo.
+**Versão**: 4.0.0 (Fase 4 - CRM e Automações)  
+**Objetivo**: Digitalizar e otimizar a operação de oficinas mecânicas com CRM completo, automações inteligentes e business intelligence avançado.
 
 ## ✨ Funcionalidades Implementadas (Fase 1)
 
@@ -124,6 +124,7 @@ O sistema pode ser acessado por outros dispositivos na mesma rede:
 
 ### Tabelas Principais
 
+#### Módulos Operacionais
 | Tabela | Descrição |
 |--------|-----------|
 | `clientes` | Cadastro de clientes |
@@ -141,6 +142,26 @@ O sistema pode ser acessado por outros dispositivos na mesma rede:
 | `ordens_compra` | Ordens de compra de peças |
 | `oc_itens` | Itens de cada ordem de compra |
 
+#### Módulos de Gestão (Fase 2 e 3)
+| Tabela | Descrição |
+|--------|-----------|
+| `orcamentos` | Orçamentos criados |
+| `orcamento_itens` | Itens de cada orçamento |
+| `movimentacoes_estoque` | Histórico de movimentações |
+| `contas_receber` | Contas a receber |
+| `contas_pagar` | Contas a pagar |
+| `plano_contas` | Plano de contas contábil |
+
+#### Módulos CRM (Fase 4)
+| Tabela | Descrição |
+|--------|-----------|
+| `clientes_historico` | Histórico completo de interações |
+| `lembretes` | Lembretes de manutenção automáticos |
+| `pesquisas_satisfacao` | Pesquisas de satisfação NPS |
+| `notificacoes` | Sistema de notificações multi-canal |
+| `campanhas` | Campanhas de marketing |
+| `clientes_preferencias` | Preferências de comunicação |
+
 ### Relacionamentos
 - Cliente → Veículos (1:N)
 - OS → Cliente (N:1)
@@ -151,27 +172,58 @@ O sistema pode ser acessado por outros dispositivos na mesma rede:
 
 ## 📡 API Endpoints
 
-### Principais Rotas
+### Módulos Operacionais
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | `GET` | `/api` | Informações da API |
 | `GET` | `/api/clientes` | Listar clientes |
 | `POST` | `/api/clientes` | Criar cliente |
+| `PUT` | `/api/clientes/:id` | Atualizar cliente |
 | `GET` | `/api/veiculos` | Listar veículos |
 | `POST` | `/api/veiculos` | Criar veículo |
+| `PUT` | `/api/veiculos/:id` | Atualizar veículo |
 | `GET` | `/api/pecas` | Listar peças |
-| `GET` | `/api/pecas?estoque_baixo=true` | Peças com estoque baixo |
+| `PUT` | `/api/pecas/:id` | Atualizar peça |
 | `GET` | `/api/servicos` | Listar tipos de serviço |
-| `GET` | `/api/servicos/categorias` | Listar categorias |
-| `GET` | `/api/ordens-servico` | Listar OS |
+| `PUT` | `/api/servicos/:id` | Atualizar serviço |
+| `PUT` | `/api/mecanicos/:id` | Atualizar mecânico |
+| `PUT` | `/api/fornecedores/:id` | Atualizar fornecedor |
 | `GET` | `/api/ordens-servico/kanban` | OS organizadas por status |
 | `POST` | `/api/ordens-servico` | Criar nova OS |
 | `PATCH` | `/api/ordens-servico/:id/status` | Atualizar status da OS |
-| `POST` | `/api/ordens-servico/:id/servicos` | Adicionar serviço à OS |
-| `POST` | `/api/ordens-servico/:id/pecas` | Adicionar peça à OS |
-| `POST` | `/api/ordens-servico/:id/checklist` | Adicionar item ao checklist |
 | `GET` | `/api/busca-rapida?q=termo` | Busca rápida |
+
+### Módulos de Gestão
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `GET` | `/api/orcamentos` | Listar orçamentos |
+| `GET` | `/api/orcamentos/estatisticas` | Estatísticas de orçamentos |
+| `GET` | `/api/estoque/estatisticas` | Estatísticas de estoque |
+| `GET` | `/api/financeiro/resumo` | Resumo financeiro |
+| `GET` | `/api/relatorios/dashboard` | Dashboard de BI |
+
+### Módulos CRM (Fase 4)
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `GET` | `/api/crm/dashboard` | Dashboard CRM consolidado |
+| `GET` | `/api/crm/clientes/:id/perfil-360` | Perfil 360° completo do cliente |
+| `GET` | `/api/crm/clientes/:id/historico` | Histórico de interações |
+| `GET` | `/api/crm/clientes/risco-perda` | Clientes com risco de perda |
+| `GET` | `/api/crm/analise-retencao` | Análise de retenção |
+| `GET` | `/api/lembretes` | Listar lembretes |
+| `GET` | `/api/lembretes/vencidos` | Lembretes vencidos e próximos |
+| `POST` | `/api/lembretes/auto-criar` | Criar lembretes automaticamente |
+| `POST` | `/api/lembretes/:id/enviar` | Enviar notificação de lembrete |
+| `GET` | `/api/pesquisas/estatisticas/geral` | Estatísticas gerais de satisfação |
+| `GET` | `/api/pesquisas/estatisticas/nps` | Cálculo do NPS |
+| `POST` | `/api/pesquisas/responder/:token` | Responder pesquisa (link público) |
+| `GET` | `/api/notificacoes` | Listar notificações |
+| `POST` | `/api/notificacoes/enviar` | Enviar notificação |
+| `POST` | `/api/notificacoes/enviar-em-lote` | Envio em lote |
+| `GET` | `/api/notificacoes/estatisticas/geral` | Estatísticas de notificações |
 
 ## 📸 Upload de Fotos
 
@@ -189,7 +241,7 @@ webapp/
 ├── public/
 │   ├── index.html              # Interface principal
 │   └── js/
-│       └── app.js              # Lógica do frontend
+│       └── app.js              # Lógica do frontend (completamente documentada)
 ├── routes/
 │   ├── clientes.js             # Rotas de clientes
 │   ├── veiculos.js             # Rotas de veículos
@@ -197,10 +249,24 @@ webapp/
 │   ├── mecanicos.js            # Rotas de mecânicos
 │   ├── servicos.js             # Rotas de serviços
 │   ├── fornecedores.js         # Rotas de fornecedores
-│   └── ordens-servico.js       # Rotas de OS
+│   ├── ordens-servico.js       # Rotas de OS
+│   ├── orcamentos.js           # Rotas de orçamentos (Fase 2)
+│   ├── estoque.js              # Rotas de estoque (Fase 2)
+│   ├── financeiro.js           # Rotas financeiras (Fase 3)
+│   ├── relatorios.js           # Rotas de BI (Fase 3)
+│   ├── crm.js                  # Rotas de CRM (Fase 4)
+│   ├── lembretes.js            # Rotas de lembretes (Fase 4)
+│   ├── pesquisas.js            # Rotas de pesquisas (Fase 4)
+│   └── notificacoes.js         # Rotas de notificações (Fase 4)
 ├── scripts/
 │   ├── init-database.js        # Script de inicialização do BD
-│   └── seed-database.js        # Script de dados de exemplo
+│   ├── seed-database.js        # Script de dados de exemplo (Fase 1)
+│   ├── migrate-fase2.js        # Migração Fase 2
+│   ├── migrate-fase3.js        # Migração Fase 3
+│   ├── migrate-fase4.js        # Migração Fase 4
+│   ├── seed-orcamentos.js      # Dados de exemplo Fase 2
+│   ├── seed-financeiro.js      # Dados de exemplo Fase 3
+│   └── seed-crm.js             # Dados de exemplo Fase 4
 ├── uploads/                    # Fotos do checklist
 ├── server.js                   # Servidor principal
 ├── start.cmd                   # Arquivo de inicialização Windows
@@ -220,28 +286,78 @@ Copie os seguintes arquivos/pastas:
 
 Substitua os arquivos originais pelos arquivos do backup.
 
-## 🔜 Próximas Fases (Roadmap)
+## ✅ Funcionalidades Completas
 
-### Fase 2 - Gestão de Estoque e Orçamentos
-- [ ] Módulo completo de Orçamentos
-- [ ] Envio de orçamentos por WhatsApp/Email
-- [ ] Conversão de orçamento em OS
-- [ ] Módulo de Ordem de Compra
-- [ ] Controle avançado de estoque
+### ✨ Fase 2 - Gestão de Estoque e Orçamentos (COMPLETA)
+- ✅ Módulo completo de Orçamentos com PDF
+- ✅ Gestão avançada de estoque com movimentações
+- ✅ Controle de entrada/saída/ajustes/devoluções
+- ✅ Alertas automáticos de estoque baixo
+- ✅ Rastreamento completo de histórico
 
-### Fase 3 - Inteligência de Negócios
-- [ ] Módulo Financeiro (Contas a Pagar/Receber)
-- [ ] Relatórios por categoria de serviço
-- [ ] Análise de rentabilidade
-- [ ] Gráficos e dashboards avançados
-- [ ] Relatório de produtividade por mecânico
+### ✨ Fase 3 - Inteligência de Negócios (COMPLETA)
+- ✅ Módulo Financeiro completo (Contas a Pagar/Receber)
+- ✅ Fluxo de Caixa automático
+- ✅ Plano de Contas configurável
+- ✅ Relatórios de rentabilidade por OS
+- ✅ Curva ABC de Clientes e Peças
+- ✅ Performance por categoria e mecânico
+- ✅ Dashboard consolidado de BI
 
-### Fase 4 - CRM e Automações
-- [ ] Lembretes automáticos de revisão
-- [ ] Histórico completo do cliente
-- [ ] Pesquisas de satisfação
-- [ ] Integrações com WhatsApp Business API
-- [ ] Notificações por SMS
+### ✨ Fase 4 - CRM e Automações (COMPLETA)
+- ✅ **Perfil 360° do Cliente**
+  - Histórico completo de interações
+  - Estatísticas de atendimento
+  - Análise de retenção e risco de perda
+  - Preferências de comunicação
+  - Veículos e OS relacionados
+
+- ✅ **Lembretes Automáticos**
+  - Criação automática após finalização de OS
+  - Lembretes por tempo (dias) ou quilometragem
+  - Notificações de vencimento
+  - Priorização por urgência
+
+- ✅ **Pesquisas de Satisfação**
+  - Criação automática ao finalizar OS
+  - Sistema NPS (Net Promoter Score)
+  - Avaliação por critérios (Atendimento, Qualidade, Prazo, Preço)
+  - Link único para resposta do cliente
+  - Estatísticas e análises consolidadas
+
+- ✅ **Sistema de Notificações Multi-canal**
+  - WhatsApp Business API (simulado)
+  - SMS (simulado)
+  - Email (simulado)
+  - Envio individual e em lote
+  - Rastreamento de status e estatísticas
+  - Templates configuráveis
+
+- ✅ **Campanhas de Marketing**
+  - Segmentação de clientes
+  - Programação de envios
+  - Monitoramento de resultados
+
+- ✅ **Formulários Completos de Edição**
+  - Edição de todos os cadastros (Clientes, Veículos, Peças, Serviços, Mecânicos, Fornecedores)
+  - Modais reutilizáveis e intuitivos
+  - Validação de dados em tempo real
+  - Feedback visual de sucesso/erro
+
+## 🔜 Próximas Evoluções
+
+### Fase 5 - Integrações Reais (Planejada)
+- [ ] Integração real com WhatsApp Business API
+- [ ] Integração real com provedores de SMS
+- [ ] Integração real com serviços de Email (SendGrid, Mailgun)
+- [ ] Gateway de pagamento (PIX, Cartão)
+- [ ] Nota Fiscal Eletrônica (NF-e, NFS-e)
+
+### Fase 6 - Mobile App (Planejada)
+- [ ] App nativo Android/iOS
+- [ ] Notificações push
+- [ ] Assinatura digital do cliente
+- [ ] Consulta de OS em tempo real
 
 ## 🐛 Solução de Problemas
 
