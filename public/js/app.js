@@ -1920,6 +1920,195 @@ const Forms = {
     });
   },
 
+  /**
+   * Abre modal para cadastrar novo serviço
+   */
+  novoServico: () => {
+    Modal.show('Novo Serviço', `
+      <form id="form-servico" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+            <input type="text" name="nome" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Categoria *</label>
+            <select name="categoria" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="">Selecione...</option>
+              <option value="MECANICA">Mecânica</option>
+              <option value="ELETRICA">Elétrica</option>
+              <option value="FUNILARIA">Funilaria</option>
+              <option value="PINTURA">Pintura</option>
+              <option value="PREVENTIVA">Preventiva</option>
+              <option value="DIAGNOSTICO">Diagnóstico</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Preço Padrão *</label>
+            <input type="number" name="preco_padrao" required step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tempo Estimado</label>
+            <input type="text" name="tempo_estimado" placeholder="Ex: 2h, 30min" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+            <textarea name="descricao" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+        </div>
+      </form>
+    `, async () => {
+      const form = document.getElementById('form-servico');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        await api.post('/servicos', data);
+        Utils.showToast('Serviço cadastrado com sucesso!', 'success');
+        Modal.close();
+        PageManager.loadPage('servicos');
+      } catch (error) {
+        Utils.showToast('Erro ao cadastrar serviço: ' + error.message, 'error');
+      }
+    });
+  },
+
+  /**
+   * Abre modal para cadastrar novo mecânico
+   */
+  novoMecanico: () => {
+    Modal.show('Novo Mecânico', `
+      <form id="form-mecanico" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+            <input type="text" name="nome" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+            <input type="text" name="cpf" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+            <input type="text" name="telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Especialidade</label>
+            <input type="text" name="especialidade" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Salário</label>
+            <input type="number" name="salario" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Comissão (%)</label>
+            <input type="number" name="comissao_percentual" step="0.01" min="0" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select name="ativo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="1">Ativo</option>
+              <option value="0">Inativo</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    `, async () => {
+      const form = document.getElementById('form-mecanico');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        await api.post('/mecanicos', data);
+        Utils.showToast('Mecânico cadastrado com sucesso!', 'success');
+        Modal.close();
+        PageManager.loadPage('mecanicos');
+      } catch (error) {
+        Utils.showToast('Erro ao cadastrar mecânico: ' + error.message, 'error');
+      }
+    });
+  },
+
+  /**
+   * Abre modal para cadastrar novo fornecedor
+   */
+  novoFornecedor: () => {
+    Modal.show('Novo Fornecedor', `
+      <form id="form-fornecedor" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Razão Social *</label>
+            <input type="text" name="razao_social" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome Fantasia</label>
+            <input type="text" name="nome_fantasia" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">CNPJ *</label>
+            <input type="text" name="cnpj" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Contato</label>
+            <input type="text" name="contato" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+            <input type="text" name="telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+            <input type="text" name="endereco" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+            <input type="text" name="cidade" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+            <input type="text" name="estado" maxlength="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+      </form>
+    `, async () => {
+      const form = document.getElementById('form-fornecedor');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        await api.post('/fornecedores', data);
+        Utils.showToast('Fornecedor cadastrado com sucesso!', 'success');
+        Modal.close();
+        PageManager.loadPage('fornecedores');
+      } catch (error) {
+        Utils.showToast('Erro ao cadastrar fornecedor: ' + error.message, 'error');
+      }
+    });
+  },
+
   // ===== FORMULÁRIOS DE EDIÇÃO =====
   
   /**
@@ -2415,6 +2604,15 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (button.textContent.includes('Nova Peça')) {
       e.preventDefault();
       Forms.novaPeca();
+    } else if (button.textContent.includes('Novo Serviço')) {
+      e.preventDefault();
+      Forms.novoServico();
+    } else if (button.textContent.includes('Novo Mecânico')) {
+      e.preventDefault();
+      Forms.novoMecanico();
+    } else if (button.textContent.includes('Novo Fornecedor')) {
+      e.preventDefault();
+      Forms.novoFornecedor();
     } else if (button.textContent.includes('Nova OS') || button.id === 'btn-nova-os-page') {
       e.preventDefault();
       Forms.novaOS();
